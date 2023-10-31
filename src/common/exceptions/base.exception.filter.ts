@@ -1,6 +1,5 @@
 // 全局异常拦截
 // base.exception.filter => Catch 的参数为空时，默认捕获所有异常
-// import { FastifyReply, FastifyRequest } from 'fastify';
 import { Response, Request } from 'express';
 
 import {

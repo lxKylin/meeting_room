@@ -11,8 +11,8 @@ export class BaseEntity {
   id: number;
 
   @CreateDateColumn()
-  createAt: Date;
+  createTime: Date;
 
   @UpdateDateColumn()
-  updateAt: Date;
+  updateTime: Date;
 }

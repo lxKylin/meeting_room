@@ -1,4 +1,5 @@
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
+import { Exclude } from 'class-transformer';
 
 import { BaseEntity } from './base.entity';
 import { Role } from './role.entity';
@@ -13,6 +14,8 @@ export class User extends BaseEntity {
   })
   username: string;
 
+  // 请求返回数据时将密码这个字段隐藏
+  @Exclude()
   @Column({
     length: 50,
     comment: '密码'

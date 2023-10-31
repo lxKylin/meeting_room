@@ -4,7 +4,8 @@ import { UserService } from '../services/user.service';
 import { EmailService } from '../services/email.service';
 import { RedisService } from '../services/redis.service';
 
-import { RegisterUserDto } from '../dtos/register-user.dto';
+import { RegisterUserDto } from '@/dtos/register-user.dto';
+import { LoginUserDto } from '@/dtos/login-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -35,5 +36,23 @@ export class UserController {
     });
 
     return '发送成功';
+  }
+
+  @Post('login')
+  async userLogin(@Body() loginUser: LoginUserDto) {
+    const userInfoVo = await this.userService.login(loginUser, false);
+    return userInfoVo;
+  }
+
+  @Post('admin/login')
+  async adminLogin(@Body() loginUser: LoginUserDto) {
+    const userInfoVo = await this.userService.login(loginUser, true);
+    return userInfoVo;
+  }
+
+  @Get('init-data')
+  async initData() {
+    await this.userService.initData();
+    return '初始化数据成功！';
   }
 }

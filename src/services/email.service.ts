@@ -21,7 +21,7 @@ export class EmailService {
     await this.transporter.sendMail({
       from: {
         name: '会议室预定系统',
-        address: '1159469891@qq.com'
+        address: process.env.EMAIL_USER
       },
       to,
       subject,
