@@ -11,6 +11,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user.module';
 import { RedisModule } from './redis.module';
 import { EmailModule } from './email.module';
+import { AuthModule } from './auth.module';
 
 @Module({
   imports: [
@@ -33,7 +34,8 @@ import { EmailModule } from './email.module';
     }),
     UserModule,
     RedisModule,
-    EmailModule
+    EmailModule,
+    AuthModule
   ],
   controllers: [],
   providers: []

@@ -1,6 +1,7 @@
 import { Injectable, Logger, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { JwtService } from '@nestjs/jwt';
 
 import { md5 } from '@/utils/password-handle';
 
@@ -10,12 +11,14 @@ import { User } from '@/entities/user.entity';
 import { Role } from '@/entities/role.entity';
 import { Permission } from '@/entities/permission.entity';
 
-import { RegisterUserDto } from '../dtos/register-user.dto';
+import { RegisterUserDto } from '@/dtos/register-user.dto';
 import { LoginUserDto } from '@/dtos/login-user.dto';
 
 import { BUSINESS_ERROR_CODE } from '@/common/exceptions/business.error.codes';
 import { BusinessException } from '@/common/exceptions/business.exception';
 import { LoginUserVo } from '@/dtos/login-user.vo';
+
+import uniquePermission from '@/utils/unique-permission';
 
 @Injectable()
 export class UserService {
@@ -33,6 +36,14 @@ export class UserService {
   @Inject(RedisService)
   private readonly redisService: RedisService;
 
+  @Inject(JwtService)
+  private readonly jwtService: JwtService;
+
+  /**
+   * 注册
+   * @param user
+   * @returns
+   */
   async register(user: RegisterUserDto) {
     const foundUser = await this.userRepository.findOneBy({
       username: user.username
@@ -79,6 +90,12 @@ export class UserService {
     }
   }
 
+  /**
+   * 登录
+   * @param loginUser
+   * @param isAdmin
+   * @returns
+   */
   async login(loginUser: LoginUserDto, isAdmin: boolean) {
     const user = await this.userRepository.findOne({
       where: {
@@ -88,14 +105,7 @@ export class UserService {
       relations: ['roles', 'roles.permissions'] // 设置级联查询 roles 和 roles.permissions。
     });
 
-    if (!user) {
-      throw new BusinessException({
-        code: BUSINESS_ERROR_CODE.COMMON,
-        message: '账号或密码错误'
-      });
-    }
-
-    if (user.password !== md5(loginUser.password)) {
+    if (!user || user.password !== md5(loginUser.password)) {
       throw new BusinessException({
         code: BUSINESS_ERROR_CODE.COMMON,
         message: '账号或密码错误'
@@ -115,17 +125,49 @@ export class UserService {
       isAdmin: user.isAdmin,
       roles: user.roles.map((item) => item.name),
       // permissions 是所有 roles 的 permissions 的合并，要去下重。
-      permissions: user.roles.reduce((arr, item) => {
-        item.permissions.forEach((permission) => {
-          if (arr.indexOf(permission) === -1) {
-            arr.push(permission);
-          }
-        });
-        return arr;
-      }, [])
+      permissions: uniquePermission(user.roles)
     };
 
+    userInfoVo.accessToken = this.jwtService.sign(
+      {
+        userId: userInfoVo.userInfo.id,
+        username: userInfoVo.userInfo.username,
+        roles: userInfoVo.userInfo.roles,
+        permissions: userInfoVo.userInfo.permissions
+      },
+      {
+        expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRES || '30m'
+      }
+    );
+
+    userInfoVo.refreshToken = this.jwtService.sign(
+      {
+        userId: userInfoVo.userInfo.id
+      },
+      {
+        expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRES || '7d'
+      }
+    );
+
     return userInfoVo;
+  }
+
+  async findUserById(userId: number, isAdmin: boolean) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+        isAdmin
+      },
+      relations: ['roles', 'roles.permissions']
+    });
+
+    return {
+      id: user.id,
+      username: user.username,
+      isAdmin: user.isAdmin,
+      roles: user.roles.map((item) => item.name),
+      permissions: uniquePermission(user.roles)
+    };
   }
 
   // 初始化数据

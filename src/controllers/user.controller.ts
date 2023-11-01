@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Inject, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Inject,
+  Query,
+  UnauthorizedException
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 
 import { UserService } from '../services/user.service';
 import { EmailService } from '../services/email.service';
@@ -16,6 +25,9 @@ export class UserController {
 
   @Inject(RedisService)
   private redisService: RedisService;
+
+  @Inject(JwtService)
+  private readonly jwtService: JwtService;
 
   @Post('register')
   async create(@Body() registerUserDto: RegisterUserDto) {
@@ -49,6 +61,63 @@ export class UserController {
     const userInfoVo = await this.userService.login(loginUser, true);
     return userInfoVo;
   }
+
+  @Get('refresh')
+  async refresh(@Query('refreshToken') refreshToken: string) {
+    try {
+      const data = this.jwtService.verify(refreshToken);
+
+      const user = await this.userService.findUserById(data.userId, false);
+
+      const { access_token, refresh_token } = this.getAccessAndRefresh(user);
+
+      return {
+        access_token,
+        refresh_token
+      };
+    } catch (e) {
+      throw new UnauthorizedException('token 已失效，请重新登录');
+    }
+  }
+
+  @Get('admin/refresh')
+  async adminRefresh(@Query('refreshToken') refreshToken: string) {
+    try {
+      const data = this.jwtService.verify(refreshToken);
+
+      const user = await this.userService.findUserById(data.userId, true);
+
+      const { access_token, refresh_token } = this.getAccessAndRefresh(user);
+
+      return {
+        access_token,
+        refresh_token
+      };
+    } catch (e) {
+      throw new UnauthorizedException('token 已失效，请重新登录');
+    }
+  }
+
+  getAccessAndRefresh = (user) => {
+    const access_token = this.jwtService.sign(
+      {
+        userId: user.id,
+        username: user.username,
+        roles: user.roles,
+        permissions: user.permissions
+      },
+      { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRES || '30m' }
+    );
+
+    const refresh_token = this.jwtService.sign(
+      {
+        userId: user.id
+      },
+      { expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRES || '7d' }
+    );
+
+    return { access_token, refresh_token };
+  };
 
   @Get('init-data')
   async initData() {
