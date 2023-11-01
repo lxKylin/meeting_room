@@ -63,7 +63,7 @@ export class User extends BaseEntity {
 
   @ManyToMany(() => Role)
   @JoinTable({
-    name: 'user_roles'
+    name: 'user_roles' // 中间表名称
   })
   roles: Role[];
 }

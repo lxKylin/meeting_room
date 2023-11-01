@@ -13,6 +13,8 @@ import { RedisModule } from './redis.module';
 import { EmailModule } from './email.module';
 import { AuthModule } from './auth.module';
 
+import { AppController } from '@/controllers/app.controller';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -37,7 +39,7 @@ import { AuthModule } from './auth.module';
     EmailModule,
     AuthModule
   ],
-  controllers: [],
+  controllers: [AppController],
   providers: []
 })
 export class AppModule {}
