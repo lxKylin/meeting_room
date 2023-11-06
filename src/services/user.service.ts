@@ -20,6 +20,14 @@ import { LoginUserVo } from '@/dtos/login-user.vo';
 
 import uniquePermission from '@/utils/unique-permission';
 
+import { UpdatePasswordDto } from '@/dtos/update-password.dto';
+
+import {
+  REGISTER_CAPTCHA,
+  UPDATE_PASSWORD_CAPTCHA
+} from '@/common/constant/common-constants';
+import { UpdateUserDto } from '@/dtos/update-user.dto';
+
 @Injectable()
 export class UserService {
   private logger = new Logger();
@@ -57,7 +65,9 @@ export class UserService {
       });
     }
 
-    const captcha = await this.redisService.get(`captcha_${user.email}`);
+    const captcha = await this.redisService.get(
+      `${REGISTER_CAPTCHA}_${user.email}`
+    );
 
     if (!captcha) {
       // throw new HttpException('验证码已失效', HttpStatus.BAD_REQUEST);
@@ -168,6 +178,71 @@ export class UserService {
       roles: user.roles.map((item) => item.name),
       permissions: uniquePermission(user.roles)
     };
+  }
+
+  async findUserDetailById(userId: number) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+
+    return user;
+  }
+
+  async updatePassword(userId: number, passwordDto: UpdatePasswordDto) {
+    const captcha = await this.redisService.get(
+      `${UPDATE_PASSWORD_CAPTCHA}_${passwordDto.email}`
+    );
+
+    if (!captcha) {
+      throw new BusinessException('验证码已失效');
+    }
+
+    if (passwordDto.captcha !== captcha) {
+      throw new BusinessException('验证码不正确');
+    }
+
+    const user = await this.userRepository.findOneBy({ id: userId });
+
+    user.password = md5(passwordDto.password);
+
+    try {
+      await this.userRepository.save(user);
+      return '修改密码成功';
+    } catch (e) {
+      this.logger.error(e, UserService);
+      return '修改密码失败';
+    }
+  }
+
+  async update(userId: number, updateUserDto: UpdateUserDto) {
+    const captcha = await this.redisService.get(
+      `update_user_captcha_${updateUserDto.email}`
+    );
+
+    if (!captcha) {
+      throw new BusinessException('验证码已失效');
+    }
+
+    if (updateUserDto.captcha !== captcha) {
+      throw new BusinessException('验证码不正确');
+    }
+
+    const foundUser = await this.userRepository.findOneBy({
+      id: userId
+    });
+
+    if (updateUserDto.nickName) {
+      foundUser.nickName = updateUserDto.nickName;
+    }
+    if (updateUserDto.headPic) {
+      foundUser.headPic = updateUserDto.headPic;
+    }
+
+    try {
+      await this.userRepository.save(foundUser);
+      return '用户信息修改成功';
+    } catch (e) {
+      this.logger.error(e, UserService);
+      return '用户信息修改成功';
+    }
   }
 
   // 初始化数据

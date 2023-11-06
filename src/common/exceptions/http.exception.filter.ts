@@ -35,27 +35,22 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const status = exception.getStatus(); // 获取异常状态码
 
     // 处理业务异常
-    /**
-     * 由于异常拦截的返回函数使用的是 Fastify 提供的，所以我们使用的返回方法是 .send（），
-     * 如果你没有使用 Fastify 作为 HTTP 底层服务的话，拦截返回的方法要保持跟官网一致
-     * （官网默认的是 Express 的框架，所以返回方法不一样）。
-     */
     if (exception instanceof BusinessException) {
       const error = exception.getResponse();
       // status(HttpStatus.OK)
-      response.status(error['code']).send({
-        data: null,
+      response.status(error['code']).json({
         status: error['code'],
-        extra: {},
         message: error['message'],
-        success: false
+        success: false,
+        data: null,
+        extra: {}
       });
       return;
     }
 
     const error = exception.getResponse();
     response.status(status).json({
-      statusCode: status,
+      status,
       message: error['message'],
       timestamp: new Date().toISOString(),
       path: request.url

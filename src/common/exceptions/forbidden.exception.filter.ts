@@ -15,7 +15,7 @@ export class ForbiddenExceptionFilter implements ExceptionFilter {
     const message = exception.message;
 
     response.status(status).json({
-      statusCode: status,
+      status,
       message,
       error: 'Forbidden'
     });

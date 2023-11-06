@@ -10,21 +10,18 @@ import {
 import { JwtService } from '@nestjs/jwt';
 
 import { UserService } from '../services/user.service';
-import { EmailService } from '../services/email.service';
-import { RedisService } from '../services/redis.service';
 
 import { RegisterUserDto } from '@/dtos/register-user.dto';
+import { UpdatePasswordDto } from '@/dtos/update-password.dto';
+import { UpdateUserDto } from '@/dtos/update-user.dto';
 import { LoginUserDto } from '@/dtos/login-user.dto';
+import { UserDetailVo } from '@/dtos/user-detail.vo';
+
+import { RequireLogin, UserInfo } from '@/common/custom.decorator';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
-  @Inject(EmailService)
-  private emailService: EmailService;
-
-  @Inject(RedisService)
-  private redisService: RedisService;
 
   @Inject(JwtService)
   private readonly jwtService: JwtService;
@@ -32,22 +29,6 @@ export class UserController {
   @Post('register')
   async create(@Body() registerUserDto: RegisterUserDto) {
     return await this.userService.register(registerUserDto);
-  }
-
-  @Get('register-captcha')
-  async captcha(@Query('address') address: string) {
-    // 生成一个长度为 6 的随机字符串
-    const code = Math.random().toString().slice(2, 8);
-
-    await this.redisService.set(`captcha_${address}`, code, 5 * 60);
-
-    await this.emailService.sendMail({
-      to: address,
-      subject: '注册验证码',
-      html: `<p>你的注册验证码是：${code}</p>` // 也可发送一个html文件(使用fs读取本地文件)
-    });
-
-    return '发送成功';
   }
 
   @Post('login')
@@ -118,6 +99,43 @@ export class UserController {
 
     return { access_token, refresh_token };
   };
+
+  @Get('info')
+  @RequireLogin()
+  async info(@UserInfo('userId') userId: number) {
+    const user = await this.userService.findUserDetailById(userId);
+
+    const userDetailVo = new UserDetailVo();
+
+    userDetailVo.id = user.id;
+    userDetailVo.username = user.username;
+    userDetailVo.nickName = user.nickName;
+    userDetailVo.email = user.email;
+    userDetailVo.headPic = user.headPic;
+    userDetailVo.phoneNumber = user.phoneNumber;
+    userDetailVo.isFrozen = user.isFrozen;
+    userDetailVo.createTime = user.createTime;
+
+    return userDetailVo;
+  }
+
+  @Post(['update_password', 'admin/update_password'])
+  @RequireLogin()
+  async updatePassword(
+    @UserInfo('userId') userId: number,
+    @Body() passwordDto: UpdatePasswordDto
+  ) {
+    console.log(passwordDto);
+    return await this.userService.updatePassword(userId, passwordDto);
+  }
+
+  @Post(['update', 'admin/update'])
+  async update(
+    @UserInfo('userId') userId: number,
+    @Body() updateUserDto: UpdateUserDto
+  ) {
+    return await this.userService.update(userId, updateUserDto);
+  }
 
   @Get('init-data')
   async initData() {
