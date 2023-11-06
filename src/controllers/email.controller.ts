@@ -1,5 +1,9 @@
 import { Controller, Get, Inject, Query, Request } from '@nestjs/common';
 
+import * as path from 'path';
+import * as fs from 'fs';
+import * as ejs from 'ejs';
+
 import { EmailService } from '../services/email.service';
 import { RedisService } from '../services/redis.service';
 
@@ -7,6 +11,8 @@ import {
   REGISTER_CAPTCHA,
   UPDATE_PASSWORD_CAPTCHA
 } from '@/common/constant/common-constants';
+
+import { BusinessException } from '@/common/exceptions/business.exception';
 
 @Controller('captcha')
 export class EmailController {
@@ -21,7 +27,7 @@ export class EmailController {
     // 生成一个长度为 6 的随机字符串
     const code: string = Math.random().toString().slice(2, 8);
 
-    const path: string = req.route.path;
+    const url: string = req.route.path;
 
     const keyMap = {
       '/api/captcha/register': `${REGISTER_CAPTCHA}_${address}`,
@@ -33,14 +39,28 @@ export class EmailController {
       '/api/captcha/update_password': '修改密码验证码'
     };
 
-    await this.redisService.set(keyMap[path], code, 5 * 60);
+    // 读取 HTML 模板文件
+    try {
+      /**
+       * 在 Nest.js 项目中，HTML 文件通常不会被自动打包到 dist 文件夹中，因为 Nest.js主要用于构建后端应用程序，而不是前端应用程序。dist 文件夹通常包含编译后的服务器代码和依赖项，而不包括前端资源。
+       */
+      const htmlPath = path.join(__dirname, '../../public/email.ejs');
+      const emailTemplate = fs.readFileSync(htmlPath, 'utf-8');
+      // 使用 EJS 替换验证码
+      const emailHtml = ejs.render(emailTemplate, { code });
 
-    await this.emailService.sendMail({
-      to: address,
-      subject: subjectMap[path],
-      html: `<p>你的${subjectMap[path]}是：${code}</p>` // 也可发送一个html文件(使用fs读取本地文件)
-    });
+      await this.redisService.set(keyMap[url], code, 5 * 60);
 
-    return '发送成功';
+      await this.emailService.sendMail({
+        to: address,
+        subject: subjectMap[url],
+        html: emailHtml // 也可发送一个html文件(使用fs读取本地文件)
+      });
+
+      return '发送成功';
+    } catch (e) {
+      console.log(e, 'e');
+      throw new BusinessException('读取文件失败！');
+    }
   }
 }
