@@ -9,7 +9,8 @@ import { RedisService } from '../services/redis.service';
 
 import {
   REGISTER_CAPTCHA,
-  UPDATE_PASSWORD_CAPTCHA
+  UPDATE_PASSWORD_CAPTCHA,
+  UPDATE_USER_CAPTCHA
 } from '@/common/constant/common-constants';
 
 import { BusinessException } from '@/common/exceptions/business.exception';
@@ -22,7 +23,7 @@ export class EmailController {
   @Inject(RedisService)
   private redisService: RedisService;
 
-  @Get(['register', 'update_password'])
+  @Get(['register', 'update_password', 'update_user'])
   async captcha(@Query('address') address: string, @Request() req) {
     // 生成一个长度为 6 的随机字符串
     const code: string = Math.random().toString().slice(2, 8);
@@ -31,12 +32,14 @@ export class EmailController {
 
     const keyMap = {
       '/api/captcha/register': `${REGISTER_CAPTCHA}_${address}`,
-      '/api/captcha/update_password': `${UPDATE_PASSWORD_CAPTCHA}_${address}`
+      '/api/captcha/update_password': `${UPDATE_PASSWORD_CAPTCHA}_${address}`,
+      '/api/captcha/update_user': `${UPDATE_USER_CAPTCHA}_${address}`
     };
 
     const subjectMap = {
       '/api/captcha/register': '注册验证码',
-      '/api/captcha/update_password': '修改密码验证码'
+      '/api/captcha/update_password': '修改密码验证码',
+      '/api/captcha/update_user': '修改用户信息验证码'
     };
 
     // 读取 HTML 模板文件

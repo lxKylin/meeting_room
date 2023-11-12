@@ -24,7 +24,8 @@ import { UpdatePasswordDto } from '@/dtos/update-password.dto';
 
 import {
   REGISTER_CAPTCHA,
-  UPDATE_PASSWORD_CAPTCHA
+  UPDATE_PASSWORD_CAPTCHA,
+  UPDATE_USER_CAPTCHA
 } from '@/common/constant/common-constants';
 import { UpdateUserDto } from '@/dtos/update-user.dto';
 
@@ -214,7 +215,7 @@ export class UserService {
 
   async update(userId: number, updateUserDto: UpdateUserDto) {
     const captcha = await this.redisService.get(
-      `update_user_captcha_${updateUserDto.email}`
+      `${UPDATE_USER_CAPTCHA}_${updateUserDto.email}`
     );
 
     if (!captcha) {
@@ -228,6 +229,8 @@ export class UserService {
     const foundUser = await this.userRepository.findOneBy({
       id: userId
     });
+
+    console.log(foundUser, 'foundUser');
 
     if (updateUserDto.nickName) {
       foundUser.nickName = updateUserDto.nickName;

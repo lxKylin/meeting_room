@@ -129,6 +129,7 @@ export class UserController {
   }
 
   @Post(['update', 'admin/update'])
+  @RequireLogin()
   async update(
     @UserInfo('userId') userId: number,
     @Body() updateUserDto: UpdateUserDto
