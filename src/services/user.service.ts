@@ -1,6 +1,6 @@
 import { Injectable, Logger, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Like } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 
 import { md5 } from '@/utils/password-handle';
@@ -230,8 +230,6 @@ export class UserService {
       id: userId
     });
 
-    console.log(foundUser, 'foundUser');
-
     if (updateUserDto.nickName) {
       foundUser.nickName = updateUserDto.nickName;
     }
@@ -246,6 +244,61 @@ export class UserService {
       this.logger.error(e, UserService);
       return '用户信息修改成功';
     }
+  }
+
+  async freezeUserById(id) {
+    const user = await this.userRepository.findOneBy({
+      id
+    });
+
+    user.isFrozen = true;
+
+    await this.userRepository.save(user);
+  }
+
+  async findUsers(
+    pageNum: number,
+    pageSize: number,
+    username: string,
+    nickname: string,
+    email: string
+  ) {
+    const condition: Record<string, any> = {};
+
+    if (username) {
+      condition.username = Like(`%${username}%`);
+    }
+
+    if (nickname) {
+      condition.nickName = Like(`%${nickname}%`);
+    }
+
+    if (email) {
+      condition.email = Like(`%${email}%`);
+    }
+
+    // findAndCount 还会查询总记录数
+    const [userList, total] = await this.userRepository.findAndCount({
+      // 指定返回字段
+      select: [
+        'id',
+        'username',
+        'nickName',
+        'email',
+        'phoneNumber',
+        'isFrozen',
+        'headPic',
+        'createTime'
+      ],
+      skip: (pageNum - 1) * pageSize, // 页码减一乘以 pageSize，就是要跳过的记录数
+      take: pageSize,
+      where: condition
+    });
+
+    return {
+      userList,
+      total
+    };
   }
 
   // 初始化数据

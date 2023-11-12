@@ -5,7 +5,8 @@ import {
   Body,
   Inject,
   Query,
-  UnauthorizedException
+  UnauthorizedException,
+  DefaultValuePipe
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
@@ -18,6 +19,8 @@ import { LoginUserDto } from '@/dtos/login-user.dto';
 import { UserDetailVo } from '@/dtos/user-detail.vo';
 
 import { RequireLogin, UserInfo } from '@/common/custom.decorator';
+
+import { generateParseIntPipe } from '@/utils/common';
 
 @Controller('user')
 export class UserController {
@@ -135,6 +138,34 @@ export class UserController {
     @Body() updateUserDto: UpdateUserDto
   ) {
     return await this.userService.update(userId, updateUserDto);
+  }
+
+  @Get('freeze')
+  async freeze(@Query('id') id: number) {
+    return await this.userService.freezeUserById(id);
+  }
+
+  @Get('list')
+  async list(
+    @Query('pageNo', new DefaultValuePipe(1), generateParseIntPipe('pageNo'))
+    pageNo: number,
+    @Query(
+      'pageSize',
+      new DefaultValuePipe(2),
+      generateParseIntPipe('pageSize')
+    )
+    pageSize: number,
+    @Query('username') username: string,
+    @Query('nickName') nickName: string,
+    @Query('email') email: string
+  ) {
+    return await this.userService.findUsers(
+      pageNo,
+      pageSize,
+      username,
+      nickName,
+      email
+    );
   }
 
   @Get('init-data')

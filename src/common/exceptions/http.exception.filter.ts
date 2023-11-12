@@ -37,10 +37,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
     // 处理业务异常
     if (exception instanceof BusinessException) {
       const error = exception.getResponse();
+      const isArr = Array.isArray(error['message']);
       // status(HttpStatus.OK)
       response.status(error['code']).json({
         status: error['code'],
-        message: error['message'],
+        message: isArr ? error['message']?.join(', ') : error['message'],
         success: false,
         data: null,
         extra: {}
@@ -49,9 +50,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
     }
 
     const error = exception.getResponse();
+    const isArr = Array.isArray(error['message']);
     response.status(status).json({
       status,
-      message: error['message'],
+      message: isArr ? error['message']?.join(', ') : error['message'],
       timestamp: new Date().toISOString(),
       path: request.url
     });
