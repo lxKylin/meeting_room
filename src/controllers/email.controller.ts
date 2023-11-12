@@ -42,14 +42,22 @@ export class EmailController {
     // 读取 HTML 模板文件
     try {
       /**
-       * 在 Nest.js 项目中，HTML 文件通常不会被自动打包到 dist 文件夹中，因为 Nest.js主要用于构建后端应用程序，而不是前端应用程序。dist 文件夹通常包含编译后的服务器代码和依赖项，而不包括前端资源。
+       * 在 Nest.js 项目中，HTML 文件通常不会被自动打包到 dist 文件夹中，因为 Nest.* js主要用于构建后端应用程序，而不是前端应用程序。dist 文件夹通常包含编译后的服务* 器代码和依赖项，而不包括前端资源。
        */
-      const htmlPath = path.join(__dirname, '../../public/email.ejs');
+      // ejs || html
+      const htmlPath: string = path.join(__dirname, '../../public/email.ejs');
+      // const htmlPath: string = path.join(__dirname, '../../public/email.html');
       const emailTemplate = fs.readFileSync(htmlPath, 'utf-8');
       // 使用 EJS 替换验证码
-      const emailHtml = ejs.render(emailTemplate, { code });
+      const validity: number = 5; // 有效期5min
+      const emailConfig = {
+        code,
+        validity,
+        name: '晚风予星'
+      };
+      const emailHtml = ejs.render(emailTemplate, emailConfig);
 
-      await this.redisService.set(keyMap[url], code, 5 * 60);
+      await this.redisService.set(keyMap[url], code, validity * 60);
 
       await this.emailService.sendMail({
         to: address,
@@ -59,7 +67,6 @@ export class EmailController {
 
       return '发送成功';
     } catch (e) {
-      console.log(e, 'e');
       throw new BusinessException('读取文件失败！');
     }
   }

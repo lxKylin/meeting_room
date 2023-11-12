@@ -125,7 +125,6 @@ export class UserController {
     @UserInfo('userId') userId: number,
     @Body() passwordDto: UpdatePasswordDto
   ) {
-    console.log(passwordDto);
     return await this.userService.updatePassword(userId, passwordDto);
   }
 
