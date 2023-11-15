@@ -1,3 +1,4 @@
+// 自定义的错误请求码，最佳实践是推荐使用从@nestjs/common导入的 HttpStatus枚举。
 export const BUSINESS_ERROR_CODE = {
   // 公共错误码
   COMMON: 400,

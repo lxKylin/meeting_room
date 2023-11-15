@@ -1,4 +1,6 @@
-// 处理业务运行中预知且主动抛出的异常
+/**
+ * 处理业务运行中预知且主动抛出的异常（HttpException基础异常类）
+ */
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { BUSINESS_ERROR_CODE } from './business.error.codes';
 

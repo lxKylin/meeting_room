@@ -1,5 +1,7 @@
-// HTTP类型接口相关异常 -> 异常过滤器
-// http.exception.filter.ts => Catch 的参数为 HttpException 将只捕获 HTTP 相关的异常错误
+/**
+ * HTTP类型接口相关异常 -> 异常过滤器
+ * http.exception.filter.ts => Catch 的参数为 HttpException 将只捕获 HTTP 相关的异常错误
+ */
 import { Response, Request } from 'express';
 
 import {
@@ -34,10 +36,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
     const status = exception.getStatus(); // 获取异常状态码
 
+    const error = exception.getResponse();
+    const isArr = Array.isArray(error['message']);
+
     // 处理业务异常
     if (exception instanceof BusinessException) {
-      const error = exception.getResponse();
-      const isArr = Array.isArray(error['message']);
       // status(HttpStatus.OK)
       response.status(error['code']).json({
         status: error['code'],
@@ -49,8 +52,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
       return;
     }
 
-    const error = exception.getResponse();
-    const isArr = Array.isArray(error['message']);
     response.status(status).json({
       status,
       message: isArr ? error['message']?.join(', ') : error['message'],

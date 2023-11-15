@@ -1,5 +1,7 @@
-// 全局异常拦截
-// base.exception.filter => Catch 的参数为空时，默认捕获所有异常
+/**
+ * 全局异常拦截
+ * base.exception.filter => Catch 的参数为空时，默认捕获所有异常
+ */
 import { Response, Request } from 'express';
 
 import {
@@ -20,7 +22,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     // request.log.error(exception);
 
     // 非 HTTP 标准异常的处理。
-    response.status(HttpStatus.SERVICE_UNAVAILABLE).send({
+    response.status(HttpStatus.SERVICE_UNAVAILABLE).json({
       status: HttpStatus.SERVICE_UNAVAILABLE,
       timestamp: new Date().toISOString(),
       path: request.url,

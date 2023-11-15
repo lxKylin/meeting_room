@@ -1,4 +1,6 @@
-// 统一全局响应输出接口规范
+/**
+ * 统一全局响应输出接口规范(拦截器)
+ */
 import {
   Injectable,
   NestInterceptor,

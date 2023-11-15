@@ -1,4 +1,6 @@
-// 自定义的装饰器
+/**
+ * 自定义的装饰器
+ */
 import { SetMetadata } from '@nestjs/common';
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { Request } from 'express';

@@ -18,9 +18,9 @@ import { UpdateUserDto } from '@/dtos/update-user.dto';
 import { LoginUserDto } from '@/dtos/login-user.dto';
 import { UserDetailVo } from '@/dtos/user-detail.vo';
 
-import { RequireLogin, UserInfo } from '@/common/custom.decorator';
+import { RequireLogin, UserInfo } from '@/common/decorator/custom.decorator';
 
-import { generateParseIntPipe } from '@/utils/common';
+import { generateParseIntPipe } from '@/common/pipe/common.pipe';
 
 @Controller('user')
 export class UserController {
