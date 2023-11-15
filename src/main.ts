@@ -7,6 +7,8 @@ import { HttpExceptionFilter } from './common/exceptions/http.exception.filter';
 import { ForbiddenExceptionFilter } from './common/exceptions/forbidden.exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 
+import { generateDocument } from './swagger';
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   // 设置全局路由前缀
@@ -30,6 +32,9 @@ async function bootstrap() {
    * 使用前 npm i --save class-validator class-transformer
    */
   app.useGlobalPipes(new ValidationPipe());
+
+  // 创建swagger文档
+  generateDocument(app);
 
   await app.listen(+process.env.SERVICE_PORT, () => {
     console.log(`项目运行在http://localhost:${process.env.SERVICE_PORT}/api`);

@@ -13,6 +13,7 @@ import { Permission } from '@/entities/permission.entity';
 
 import { RegisterUserDto } from '@/dtos/register-user.dto';
 import { LoginUserDto } from '@/dtos/login-user.dto';
+import { UserListVo } from '@/dtos/user-list.vo';
 
 import { BUSINESS_ERROR_CODE } from '@/common/exceptions/business.error.codes';
 import { BusinessException } from '@/common/exceptions/business.exception';
@@ -278,7 +279,7 @@ export class UserService {
     }
 
     // findAndCount 还会查询总记录数
-    const [userList, total] = await this.userRepository.findAndCount({
+    const [rows, totalCount] = await this.userRepository.findAndCount({
       // 指定返回字段
       select: [
         'id',
@@ -295,10 +296,12 @@ export class UserService {
       where: condition
     });
 
-    return {
-      userList,
-      total
-    };
+    const userListVo = new UserListVo();
+
+    userListVo.rows = rows;
+    userListVo.totalCount = totalCount;
+
+    return userListVo;
   }
 
   // 初始化数据

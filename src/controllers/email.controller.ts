@@ -4,6 +4,8 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as ejs from 'ejs';
 
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+
 import { EmailService } from '../services/email.service';
 import { RedisService } from '../services/redis.service';
 
@@ -15,6 +17,8 @@ import {
 
 import { BusinessException } from '@/common/exceptions/business.exception';
 
+// 设置swagger文档标签分类
+@ApiTags('验证码模块')
 @Controller('captcha')
 export class EmailController {
   @Inject(EmailService)
@@ -24,6 +28,9 @@ export class EmailController {
   private redisService: RedisService;
 
   @Get(['register', 'update_password', 'update_user'])
+  @ApiOperation({
+    summary: '发送验证码' // 接口描述信息
+  })
   async captcha(@Query('address') address: string, @Request() req) {
     // 生成一个长度为 6 的随机字符串
     const code: string = Math.random().toString().slice(2, 8);
