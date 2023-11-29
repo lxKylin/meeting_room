@@ -33,6 +33,9 @@ async function bootstrap() {
    */
   app.useGlobalPipes(new ValidationPipe());
 
+  // 支持跨域
+  app.enableCors();
+
   // 创建swagger文档
   generateDocument(app);
 

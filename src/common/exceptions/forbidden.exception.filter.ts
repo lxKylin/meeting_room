@@ -16,7 +16,7 @@ export class ForbiddenExceptionFilter implements ExceptionFilter {
 
     response.status(status).json({
       status,
-      message,
+      msg: message,
       error: 'Forbidden'
     });
   }

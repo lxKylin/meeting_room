@@ -44,7 +44,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       // status(HttpStatus.OK)
       response.status(error['code']).json({
         status: error['code'],
-        message: isArr ? error['message']?.join(', ') : error['message'],
+        msg: isArr ? error['message']?.join(', ') : error['message'],
         success: false,
         data: null,
         extra: {}

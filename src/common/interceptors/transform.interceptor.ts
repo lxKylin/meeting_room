@@ -27,7 +27,7 @@ export class TransformInterceptor<T>
         data, // 数据
         status: 200, // 接口状态值
         extra: {}, // 拓展信息
-        message: 'success', // 异常信息
+        msg: 'success', // 异常信息
         success: true // 接口业务返回状态
       }))
     );

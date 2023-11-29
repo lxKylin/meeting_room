@@ -26,7 +26,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       status: HttpStatus.SERVICE_UNAVAILABLE,
       timestamp: new Date().toISOString(),
       path: request.url,
-      message: new ServiceUnavailableException().getResponse()
+      msg: new ServiceUnavailableException().getResponse()
     });
   }
 }
