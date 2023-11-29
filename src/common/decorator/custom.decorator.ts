@@ -5,9 +5,22 @@ import { SetMetadata } from '@nestjs/common';
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { Request } from 'express';
 
-// 设置元数据
+/**
+ * RequireLogin和UserInfo需要配合使用
+ */
+
+// SetMetadata设置元数据
+/**
+ * 需要登录
+ * @returns
+ */
 export const RequireLogin = () => SetMetadata('require-login', true);
 
+/**
+ * 需要权限
+ * @param permissions 权限名称
+ * @returns
+ */
 export const RequirePermission = (...permissions: string[]) =>
   SetMetadata('require-permission', permissions);
 

@@ -84,6 +84,7 @@ export class UserController {
       {
         userId: user.id,
         username: user.username,
+        email: user.email,
         roles: user.roles,
         permissions: user.permissions
       },

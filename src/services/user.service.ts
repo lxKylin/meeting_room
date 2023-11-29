@@ -144,6 +144,7 @@ export class UserService {
       {
         userId: userInfoVo.userInfo.id,
         username: userInfoVo.userInfo.username,
+        email: userInfoVo.userInfo.email,
         roles: userInfoVo.userInfo.roles,
         permissions: userInfoVo.userInfo.permissions
       },
@@ -175,6 +176,7 @@ export class UserService {
     return {
       id: user.id,
       username: user.username,
+      email: user.email,
       isAdmin: user.isAdmin,
       roles: user.roles.map((item) => item.name),
       permissions: uniquePermission(user.roles)
