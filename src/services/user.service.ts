@@ -164,11 +164,10 @@ export class UserService {
     return userInfoVo;
   }
 
-  async findUserById(userId: number, isAdmin: boolean) {
+  async findUserById(userId: number) {
     const user = await this.userRepository.findOne({
       where: {
-        id: userId,
-        isAdmin
+        id: userId
       },
       relations: ['roles', 'roles.permissions']
     });
@@ -188,7 +187,7 @@ export class UserService {
     return user;
   }
 
-  async updatePassword(userId: number, passwordDto: UpdatePasswordDto) {
+  async updatePassword(passwordDto: UpdatePasswordDto) {
     const captcha = await this.redisService.get(
       `${UPDATE_PASSWORD_CAPTCHA}_${passwordDto.email}`
     );
@@ -201,7 +200,9 @@ export class UserService {
       throw new BusinessException('验证码不正确');
     }
 
-    const user = await this.userRepository.findOneBy({ id: userId });
+    const user = await this.userRepository.findOneBy({
+      username: passwordDto.username
+    });
 
     user.password = md5(passwordDto.password);
 
@@ -247,7 +248,7 @@ export class UserService {
     }
   }
 
-  async freezeUserById(id) {
+  async freezeUserById(id: number) {
     const user = await this.userRepository.findOneBy({
       id
     });

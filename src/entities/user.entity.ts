@@ -10,7 +10,8 @@ import { Role } from './role.entity';
 export class User extends BaseEntity {
   @Column({
     length: 50,
-    comment: '用户名'
+    comment: '用户名',
+    unique: true // 唯一
   })
   username: string;
 

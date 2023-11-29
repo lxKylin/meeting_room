@@ -6,7 +6,8 @@ import {
   Inject,
   Query,
   UnauthorizedException,
-  DefaultValuePipe
+  DefaultValuePipe,
+  Request
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
@@ -46,54 +47,26 @@ export class UserController {
     return await this.userService.register(registerUserDto);
   }
 
-  @Post('login')
+  @Post(['login', 'admin/login'])
   @ApiOperation({
-    summary: '用户登录' // 接口描述信息
+    summary: '登录' // 接口描述信息
   })
-  async userLogin(@Body() loginUser: LoginUserDto) {
-    const userInfoVo = await this.userService.login(loginUser, false);
-    return userInfoVo;
-  }
-
-  @Post('admin/login')
-  @ApiOperation({
-    summary: '管理员登录' // 接口描述信息
-  })
-  async adminLogin(@Body() loginUser: LoginUserDto) {
-    const userInfoVo = await this.userService.login(loginUser, true);
+  async userLogin(@Body() loginUser: LoginUserDto, @Request() req) {
+    const url: string = req.route.path;
+    const isAdmin: boolean = url === '/api/user/admin/login';
+    const userInfoVo = await this.userService.login(loginUser, isAdmin);
     return userInfoVo;
   }
 
   @Get('refresh')
   @ApiOperation({
-    summary: '刷新用户token' // 接口描述信息
+    summary: '刷新token' // 接口描述信息
   })
   async refresh(@Query('refreshToken') refreshToken: string) {
     try {
       const data = this.jwtService.verify(refreshToken);
 
-      const user = await this.userService.findUserById(data.userId, false);
-
-      const { access_token, refresh_token } = this.getAccessAndRefresh(user);
-
-      return {
-        access_token,
-        refresh_token
-      };
-    } catch (e) {
-      throw new UnauthorizedException('token 已失效，请重新登录');
-    }
-  }
-
-  @Get('admin/refresh')
-  @ApiOperation({
-    summary: '刷新管理员token' // 接口描述信息
-  })
-  async adminRefresh(@Query('refreshToken') refreshToken: string) {
-    try {
-      const data = this.jwtService.verify(refreshToken);
-
-      const user = await this.userService.findUserById(data.userId, true);
+      const user = await this.userService.findUserById(data.userId);
 
       const { access_token, refresh_token } = this.getAccessAndRefresh(user);
 
@@ -150,20 +123,15 @@ export class UserController {
     return userDetailVo;
   }
 
-  @Post(['update_password', 'admin/update_password'])
-  @RequireLogin()
-  @ApiBearerAuth()
+  @Post('update_password')
   @ApiOperation({
     summary: '修改密码' // 接口描述信息
   })
-  async updatePassword(
-    @UserInfo('userId') userId: number,
-    @Body() passwordDto: UpdatePasswordDto
-  ) {
-    return await this.userService.updatePassword(userId, passwordDto);
+  async updatePassword(@Body() passwordDto: UpdatePasswordDto) {
+    return await this.userService.updatePassword(passwordDto);
   }
 
-  @Post(['update', 'admin/update'])
+  @Post('updateInfo')
   @RequireLogin()
   @ApiBearerAuth()
   @ApiOperation({

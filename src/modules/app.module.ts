@@ -10,10 +10,12 @@ import { ConfigModule } from '@nestjs/config';
 
 import { UserModule } from './user.module';
 import { RedisModule } from './redis.module';
-import { EmailModule } from './email.module';
 import { AuthModule } from './auth.module';
 
 import { AppController } from '@/controllers/app.controller';
+import { EmailController } from '@/controllers/email.controller';
+
+import { EmailService } from '../services/email.service';
 
 @Module({
   imports: [
@@ -36,10 +38,9 @@ import { AppController } from '@/controllers/app.controller';
     }),
     UserModule,
     RedisModule,
-    EmailModule,
     AuthModule
   ],
-  controllers: [AppController],
-  providers: []
+  controllers: [AppController, EmailController],
+  providers: [EmailService]
 })
 export class AppModule {}
