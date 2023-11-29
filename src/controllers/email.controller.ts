@@ -77,7 +77,8 @@ export class EmailController {
 
       return '发送成功';
     } catch (e) {
-      throw new BusinessException('读取文件失败！');
+      console.log(e);
+      throw new BusinessException('发送失败！');
     }
   }
 }
