@@ -29,7 +29,7 @@ export class EmailController {
   @Inject(RedisService)
   private redisService: RedisService;
 
-  @Get('register')
+  @Get(['register', 'update_password'])
   @ApiOperation({
     summary: '发送注册验证码' // 接口描述信息
   })
@@ -55,7 +55,7 @@ export class EmailController {
     }
   }
 
-  @Get(['update_password', 'update_user'])
+  @Get(['update_user_info'])
   @ApiOperation({
     summary: '发送验证码' // 接口描述信息
   })
@@ -88,13 +88,13 @@ export class EmailController {
     const keyMap = {
       '/api/captcha/register': `${REGISTER_CAPTCHA}_${email}`,
       '/api/captcha/update_password': `${UPDATE_PASSWORD_CAPTCHA}_${email}`,
-      '/api/captcha/update_user': `${UPDATE_USER_CAPTCHA}_${email}`
+      '/api/captcha/update_user_info': `${UPDATE_USER_CAPTCHA}_${email}`
     };
 
     const subjectMap = {
       '/api/captcha/register': '注册验证码',
       '/api/captcha/update_password': '修改密码验证码',
-      '/api/captcha/update_user': '修改用户信息验证码'
+      '/api/captcha/update_user_info': '修改用户信息验证码'
     };
 
     /**

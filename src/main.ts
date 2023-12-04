@@ -9,8 +9,15 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
 
 import { generateDocument } from './swagger';
 
+import { NestExpressApplication } from '@nestjs/platform-express';
+
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  // 配置 uploads 文件夹为静态目录，以达到可直接访问下面文件的目的
+  app.useStaticAssets('uploads', {
+    prefix: '/api/uploads/'
+  });
   // 设置全局路由前缀
   app.setGlobalPrefix('api');
 

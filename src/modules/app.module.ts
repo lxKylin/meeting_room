@@ -14,8 +14,10 @@ import { AuthModule } from './auth.module';
 
 import { AppController } from '@/controllers/app.controller';
 import { EmailController } from '@/controllers/email.controller';
+import { UploadController } from '@/controllers/upload.controller';
 
-import { EmailService } from '../services/email.service';
+import { EmailService } from '@/services/email.service';
+import { UploadService } from '@/services/upload.service';
 
 @Module({
   imports: [
@@ -30,8 +32,8 @@ import { EmailService } from '../services/email.service';
         username: process.env.DATABASE_USER,
         password: process.env.DATABASE_PASSWORD,
         database: process.env.DATABASE_NAME,
-        // autoLoadEntities: true, // 自动加载模块 推荐
-        entities: [path.join(__dirname, '/../**/*.entity{.ts,.js}')], // 不推荐
+        autoLoadEntities: true, // 自动加载模块 推荐
+        // entities: [path.join(__dirname, '/../**/*.entity{.ts,.js}')], // 不推荐
         synchronize: true, // 开启同步，生产中要禁止
         logging: true // 开启日志
       })
@@ -40,7 +42,7 @@ import { EmailService } from '../services/email.service';
     RedisModule,
     AuthModule
   ],
-  controllers: [AppController, EmailController],
-  providers: [EmailService]
+  controllers: [AppController, EmailController, UploadController],
+  providers: [EmailService, UploadService]
 })
 export class AppModule {}

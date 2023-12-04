@@ -101,7 +101,7 @@ export class UserController {
     return { access_token, refresh_token };
   };
 
-  @Get('info')
+  @Get('userInfo')
   @RequireLogin()
   @ApiBearerAuth() // 标识需要token验证
   @ApiOperation({
@@ -132,7 +132,7 @@ export class UserController {
     return await this.userService.updatePassword(passwordDto);
   }
 
-  @Post('updateInfo')
+  @Post('updateUserInfo')
   @RequireLogin()
   @ApiBearerAuth()
   @ApiOperation({
