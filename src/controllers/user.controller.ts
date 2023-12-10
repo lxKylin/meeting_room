@@ -107,7 +107,7 @@ export class UserController {
   @ApiOperation({
     summary: '查询用户信息' // 接口描述信息
   })
-  async info(@UserInfo('userId') userId: number) {
+  async info(@UserInfo('userId') userId: string) {
     const user = await this.userService.findUserDetailById(userId);
 
     const userDetailVo = new UserDetailVo();
@@ -139,7 +139,7 @@ export class UserController {
     summary: '更新用户信息' // 接口描述信息
   })
   async update(
-    @UserInfo('userId') userId: number,
+    @UserInfo('userId') userId: string,
     @Body() updateUserDto: UpdateUserDto
   ) {
     return await this.userService.update(userId, updateUserDto);
@@ -151,7 +151,7 @@ export class UserController {
   @ApiOperation({
     summary: '冻结用户' // 接口描述信息
   })
-  async freeze(@Query('id') id: number) {
+  async freeze(@Query('id') id: string) {
     return await this.userService.freezeUserById(id);
   }
 

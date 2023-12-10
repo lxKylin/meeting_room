@@ -1,6 +1,6 @@
 // vo 是封装返回的数据
 interface UserInfo {
-  id: number;
+  id: string;
 
   username: string;
 

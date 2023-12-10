@@ -26,11 +26,11 @@ export class UploadController {
   })
   @UseInterceptors(
     FileInterceptor('picture', {
-      dest: 'uploads',
-      storage: fileStorage,
+      dest: 'uploads', // 告诉 Multer 将上传文件保存在哪
+      storage: fileStorage, // 磁盘存储
       // 限制图片大小
       limits: {
-        fileSize: 1024 * 1024 * 2 // 5M
+        fileSize: 1024 * 1024 * 5 // 5M
       },
       // 限制图片格式
       fileFilter(req, file, callback) {

@@ -165,7 +165,7 @@ export class UserService {
     return userInfoVo;
   }
 
-  async findUserById(userId: number) {
+  async findUserById(userId: string) {
     const user = await this.userRepository.findOne({
       where: {
         id: userId
@@ -183,7 +183,7 @@ export class UserService {
     };
   }
 
-  async findUserDetailById(userId: number) {
+  async findUserDetailById(userId: string) {
     const user = await this.userRepository.findOne({ where: { id: userId } });
 
     return user;
@@ -217,7 +217,7 @@ export class UserService {
     }
   }
 
-  async update(userId: number, updateUserDto: UpdateUserDto) {
+  async update(userId: string, updateUserDto: UpdateUserDto) {
     const captcha = await this.redisService.get(
       `${UPDATE_USER_CAPTCHA}_${updateUserDto.email}`
     );
@@ -250,7 +250,7 @@ export class UserService {
     }
   }
 
-  async freezeUserById(id: number) {
+  async freezeUserById(id: string) {
     const user = await this.userRepository.findOneBy({
       id
     });
