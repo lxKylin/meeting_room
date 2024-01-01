@@ -119,6 +119,7 @@ export class UserController {
     userDetailVo.headPic = user.headPic;
     userDetailVo.phoneNumber = user.phoneNumber;
     userDetailVo.isFrozen = user.isFrozen;
+    userDetailVo.isAdmin = user.isAdmin;
     userDetailVo.createTime = user.createTime;
 
     return userDetailVo;
