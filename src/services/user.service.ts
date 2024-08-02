@@ -248,18 +248,30 @@ export class UserService {
       return '用户信息修改成功';
     } catch (e) {
       this.logger.error(e, UserService);
-      return '用户信息修改成功';
+      return '用户信息修改失败';
     }
   }
 
-  async freezeUserById(id: string) {
+  async freezeUserById(id: string, isFrozen: boolean) {
+    if (!id || isFrozen === undefined) {
+      throw new BusinessException('请正确传参');
+    }
     const user = await this.userRepository.findOneBy({
       id
     });
+    if (!user) {
+      throw new BusinessException('用户不存在');
+    }
+    try {
+      user.isFrozen = !!isFrozen;
 
-    user.isFrozen = true;
+      await this.userRepository.save(user);
 
-    await this.userRepository.save(user);
+      return '用户状态修改成功';
+    } catch (e) {
+      this.logger.error(e);
+      return '用户状态修改失败';
+    }
   }
 
   async findUsers(

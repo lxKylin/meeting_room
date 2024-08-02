@@ -150,10 +150,10 @@ export class UserController {
   @RequireLogin()
   @ApiBearerAuth()
   @ApiOperation({
-    summary: '冻结用户' // 接口描述信息
+    summary: '冻结/解冻用户' // 接口描述信息
   })
-  async freeze(@Query('id') id: string) {
-    return await this.userService.freezeUserById(id);
+  async freeze(@Query('id') id: string, @Query('isFrozen') isFrozen: boolean) {
+    return await this.userService.freezeUserById(id, isFrozen);
   }
 
   @Get('list')

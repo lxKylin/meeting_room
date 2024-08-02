@@ -30,8 +30,8 @@ export class UserListVo {
   @ApiProperty({
     type: [User]
   })
-  rows: User[];
+  records: User[];
 
   @ApiProperty()
-  totalCount: number;
+  total: number;
 }

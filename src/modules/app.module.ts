@@ -34,8 +34,8 @@ import { UploadService } from '@/services/upload.service';
         database: process.env.DATABASE_NAME,
         autoLoadEntities: true, // 自动加载模块 推荐
         // entities: [path.join(__dirname, '/../**/*.entity{.ts,.js}')], // 不推荐
-        synchronize: true, // 开启同步，生产中要禁止
-        logging: true // 开启日志
+        synchronize: true // 开启同步，生产中要禁止
+        // logging: true // 开启日志
       })
     }),
     UserModule,

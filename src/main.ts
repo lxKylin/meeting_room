@@ -47,7 +47,9 @@ async function bootstrap() {
   generateDocument(app);
 
   await app.listen(+process.env.SERVICE_PORT, () => {
-    console.log(`项目运行在http://localhost:${process.env.SERVICE_PORT}/api`);
+    console.log(
+      `项目运行在http://localhost:${process.env.SERVICE_PORT}/api，swagger文档运行在http://localhost:${process.env.SERVICE_PORT}/api/doc`
+    );
   });
 }
 bootstrap();
