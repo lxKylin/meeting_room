@@ -110,11 +110,10 @@ export class UserService {
    * @param isAdmin
    * @returns
    */
-  async login(loginUser: LoginUserDto, isAdmin: boolean) {
+  async login(loginUser: LoginUserDto) {
     const user = await this.userRepository.findOne({
       where: {
-        username: loginUser.username,
-        isAdmin
+        username: loginUser.username
       },
       relations: ['roles', 'roles.permissions'] // 设置级联查询 roles 和 roles.permissions。
     });

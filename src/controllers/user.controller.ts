@@ -47,14 +47,12 @@ export class UserController {
     return await this.userService.register(registerUserDto);
   }
 
-  @Post(['login', 'admin/login'])
+  @Post('login')
   @ApiOperation({
     summary: '登录' // 接口描述信息
   })
-  async userLogin(@Body() loginUser: LoginUserDto, @Request() req) {
-    const url: string = req.route.path;
-    const isAdmin: boolean = url === '/api/user/admin/login';
-    const userInfoVo = await this.userService.login(loginUser, isAdmin);
+  async userLogin(@Body() loginUser: LoginUserDto) {
+    const userInfoVo = await this.userService.login(loginUser);
     return userInfoVo;
   }
 
