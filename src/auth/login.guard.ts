@@ -60,6 +60,7 @@ export class LoginGuard implements CanActivate {
       // 解码
       const data: JwtUserData = this.jwtService.verify<JwtUserData>(token);
 
+      // 登录验证通过后给request挂载用户信息，以给后面的接口访问权限进行判断
       request.user = {
         userId: data.userId,
         username: data.username,
