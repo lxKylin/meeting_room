@@ -28,7 +28,7 @@ import { PermissionGuard } from '@/auth/permission.guard';
   controllers: [AuthController],
   providers: [
     AuthService,
-    // 全局设置
+    // 全局设置登录验证、接口访问权限验证
     {
       provide: APP_GUARD,
       useClass: LoginGuard

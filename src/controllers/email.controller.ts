@@ -50,7 +50,7 @@ export class EmailController {
 
       return '发送成功';
     } catch (e) {
-      console.log(e);
+      console.error(e);
       throw new BusinessException('发送失败！');
     }
   }
@@ -60,7 +60,7 @@ export class EmailController {
     summary: '发送验证码' // 接口描述信息
   })
   @RequireLogin()
-  async captcha(@UserInfo('email') email, @Request() req) {
+  async captcha(@UserInfo('email') email: string, @Request() req) {
     const url: string = req.route.path;
 
     try {
@@ -77,12 +77,17 @@ export class EmailController {
 
       return '发送成功';
     } catch (e) {
-      console.log(e);
+      console.error(e);
       throw new BusinessException('发送失败！');
     }
   }
 
-  captchaTemplate = (email) => {
+  /**
+   * 生成验证码/模版
+   * @param email
+   * @returns
+   */
+  captchaTemplate = (email: string) => {
     // 生成一个长度为 6 的随机字符串
     const code: string = Math.random().toString().slice(2, 8);
     const keyMap = {
@@ -104,7 +109,7 @@ export class EmailController {
     // ejs || html
     const htmlPath: string = path.join(__dirname, '../../public/email.ejs');
     // const htmlPath: string = path.join(__dirname, '../../public/email.html');
-    const emailTemplate = fs.readFileSync(htmlPath, 'utf-8');
+    const emailTemplate: string = fs.readFileSync(htmlPath, 'utf-8');
     // 使用 EJS 替换验证码
     const validity: number = 5; // 有效期5min
     const emailConfig = {

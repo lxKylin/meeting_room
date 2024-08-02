@@ -17,6 +17,10 @@ export class EmailService {
     });
   }
 
+  /**
+   * 发送验证码
+   * @param param
+   */
   async sendMail({ to, subject, html }) {
     await this.transporter.sendMail({
       from: {

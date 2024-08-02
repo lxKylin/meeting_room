@@ -29,6 +29,7 @@ export const UserInfo = createParamDecorator(
   (data: string, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest<Request>();
 
+    // 这里的user是在LoginGuard中设置的，所以需要两者结合使用
     if (!request.user) {
       return null;
     }

@@ -55,18 +55,6 @@ export class UserService {
    * @returns
    */
   async register(user: RegisterUserDto) {
-    const foundUser = await this.userRepository.findOneBy({
-      username: user.username
-    });
-
-    if (foundUser) {
-      // throw new HttpException('用户已存在', HttpStatus.BAD_REQUEST);
-      throw new BusinessException({
-        code: BUSINESS_ERROR_CODE.COMMON,
-        message: '用户已存在'
-      });
-    }
-
     const captcha = await this.redisService.get(
       `${REGISTER_CAPTCHA}_${user.email}`
     );
@@ -84,6 +72,20 @@ export class UserService {
       throw new BusinessException({
         code: BUSINESS_ERROR_CODE.COMMON,
         message: '验证码不正确'
+      });
+    } else {
+      await this.redisService.del(`${REGISTER_CAPTCHA}_${user.email}`);
+    }
+
+    const foundUser = await this.userRepository.findOneBy({
+      username: user.username
+    });
+
+    if (foundUser) {
+      // throw new HttpException('用户已存在', HttpStatus.BAD_REQUEST);
+      throw new BusinessException({
+        code: BUSINESS_ERROR_CODE.COMMON,
+        message: '用户已存在'
       });
     }
 
@@ -282,7 +284,7 @@ export class UserService {
     }
 
     // findAndCount 还会查询总记录数
-    const [rows, totalCount] = await this.userRepository.findAndCount({
+    const [records, total] = await this.userRepository.findAndCount({
       // 指定返回字段
       select: [
         'id',
@@ -301,8 +303,8 @@ export class UserService {
 
     const userListVo = new UserListVo();
 
-    userListVo.rows = rows;
-    userListVo.totalCount = totalCount;
+    userListVo.records = records;
+    userListVo.total = total;
 
     return userListVo;
   }
