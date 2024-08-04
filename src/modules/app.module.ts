@@ -13,10 +13,10 @@ import { RedisModule } from './redis.module';
 import { AuthModule } from './auth.module';
 
 import { AppController } from '@/controllers/app.controller';
-import { EmailController } from '@/controllers/email.controller';
+import { CaptchaController } from '@/controllers/captcha.controller';
 import { UploadController } from '@/controllers/upload.controller';
 
-import { EmailService } from '@/services/email.service';
+import { CaptchaService } from '@/services/captcha.service';
 import { UploadService } from '@/services/upload.service';
 
 @Module({
@@ -42,7 +42,7 @@ import { UploadService } from '@/services/upload.service';
     RedisModule,
     AuthModule
   ],
-  controllers: [AppController, EmailController, UploadController],
-  providers: [EmailService, UploadService]
+  controllers: [AppController, CaptchaController, UploadController],
+  providers: [CaptchaService, UploadService]
 })
 export class AppModule {}

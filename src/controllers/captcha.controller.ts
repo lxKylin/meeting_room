@@ -1,4 +1,13 @@
-import { Controller, Get, Inject, Query, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Inject,
+  Query,
+  Request,
+  Res,
+  Session
+} from '@nestjs/common';
+import { Response } from 'express';
 
 import * as path from 'path';
 import * as fs from 'fs';
@@ -6,7 +15,7 @@ import * as ejs from 'ejs';
 
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { EmailService } from '../services/email.service';
+import { CaptchaService } from '../services/captcha.service';
 import { RedisService } from '../services/redis.service';
 
 import { UserInfo, RequireLogin } from '@/common/decorator/custom.decorator';
@@ -22,9 +31,9 @@ import { BusinessException } from '@/common/exceptions/business.exception';
 // 设置swagger文档标签分类
 @ApiTags('验证码模块')
 @Controller('captcha')
-export class EmailController {
-  @Inject(EmailService)
-  private emailService: EmailService;
+export class CaptchaController {
+  @Inject(CaptchaService)
+  private captchaService: CaptchaService;
 
   @Inject(RedisService)
   private redisService: RedisService;
@@ -42,7 +51,7 @@ export class EmailController {
 
       await this.redisService.set(keyMap[url], code, validity * 60);
 
-      await this.emailService.sendMail({
+      await this.captchaService.sendMail({
         to: address,
         subject: subjectMap[url],
         html: emailHtml // 也可发送一个html文件(使用fs读取本地文件)
@@ -69,7 +78,7 @@ export class EmailController {
 
       await this.redisService.set(keyMap[url], code, validity * 60);
 
-      await this.emailService.sendMail({
+      await this.captchaService.sendMail({
         to: email,
         subject: subjectMap[url],
         html: emailHtml // 也可发送一个html文件(使用fs读取本地文件)
@@ -79,6 +88,28 @@ export class EmailController {
     } catch (e) {
       console.error(e);
       throw new BusinessException('发送失败！');
+    }
+  }
+
+  @Get('svg')
+  @ApiOperation({
+    summary: '登录验证码' // 接口描述信息
+  })
+  async getSvgCaptcha(@Res() response: Response, @Session() session) {
+    try {
+      const { data, text } = await this.captchaService.createSvgCaptcha();
+      console.log(data, text);
+      session.code = text;
+      // await this.redisService.set('svg-captcha', text, 60);
+      response.set('Content-Type', 'image/svg+xml');
+      // response.send(Buffer.from(data, 'base64'));
+      // response.set('image/svg+xml');
+      response.send(data);
+      return {
+        data
+      };
+    } catch (error) {
+      console.error(error);
     }
   }
 

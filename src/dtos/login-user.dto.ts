@@ -14,4 +14,10 @@ export class LoginUserDto {
     message: '密码不能为空'
   })
   password: string;
+
+  @ApiProperty()
+  @IsNotEmpty({
+    message: '验证码不能为空'
+  })
+  code: string;
 }

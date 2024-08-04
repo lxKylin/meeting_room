@@ -7,7 +7,8 @@ import {
   Query,
   UnauthorizedException,
   DefaultValuePipe,
-  Request
+  Request,
+  Session
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
@@ -29,6 +30,8 @@ import { UserDetailVo } from '@/dtos/user-detail.vo';
 import { RequireLogin, UserInfo } from '@/common/decorator/custom.decorator';
 
 import { generateParseIntPipe } from '@/common/pipe/common.pipe';
+import { BUSINESS_ERROR_CODE } from '@/common/exceptions/business.error.codes';
+import { BusinessException } from '@/common/exceptions/business.exception';
 
 // 设置swagger文档标签分类
 @ApiTags('用户模块')
@@ -51,7 +54,13 @@ export class UserController {
   @ApiOperation({
     summary: '登录' // 接口描述信息
   })
-  async userLogin(@Body() loginUser: LoginUserDto) {
+  async userLogin(@Body() loginUser: LoginUserDto, @Session() session) {
+    if (loginUser.code !== session.code) {
+      throw new BusinessException({
+        code: BUSINESS_ERROR_CODE.COMMON,
+        message: '验证码错误'
+      });
+    }
     const userInfoVo = await this.userService.login(loginUser);
     return userInfoVo;
   }

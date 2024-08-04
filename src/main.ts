@@ -2,6 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from '@/modules/app.module';
 
+import * as session from 'express-session';
+
 import { AllExceptionsFilter } from './common/exceptions/base.exception.filter';
 import { HttpExceptionFilter } from './common/exceptions/http.exception.filter';
 import { ForbiddenExceptionFilter } from './common/exceptions/forbidden.exception.filter';
@@ -13,6 +15,15 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  app.use(
+    session({
+      secret: process.env.SESSION_SECRET,
+      resave: false,
+      saveUninitialized: false,
+      rolling: true //在每次请求时强行设置 cookie，这将重置 cookie 过期时间(默认:false)
+    })
+  );
 
   // 配置 uploads 文件夹为静态目录，以达到可直接访问下面文件的目的
   app.useStaticAssets('uploads', {
