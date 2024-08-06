@@ -19,9 +19,11 @@ async function bootstrap() {
   app.use(
     session({
       secret: process.env.SESSION_SECRET,
-      resave: false,
-      saveUninitialized: false,
-      rolling: true //在每次请求时强行设置 cookie，这将重置 cookie 过期时间(默认:false)
+      resave: false, // 表示如果session对象没有被修改，不会强制重新保存。
+      saveUninitialized: false, // 表示不会为未初始化的session对象保存到存储中。
+      // 同时设置rolling、maxAge，确保只要用户与服务器保持活动，他们的session就不会过期。
+      rolling: true, //在每次请求时强行设置 cookie，这将重置 cookie 过期时间(默认:false)
+      cookie: { maxAge: 5 * 60 * 1000 } // 5分钟过期时间
     })
   );
 

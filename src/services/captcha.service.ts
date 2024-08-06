@@ -45,9 +45,6 @@ export class CaptchaService {
       // background: '#f2f2f2' // 背景颜色
     });
     return {
-      // data: `${captcha.data}`,
-      // btoa是一个原生的JavaScript方法，用于将字符串数据转换为Base64编码。
-      // data: `data:image/svg+xml;base64,${btoa(captcha.data)}`,
       data: captcha.data,
       text: captcha.text.toLowerCase() // 转换为小写或进行其他处理
     };

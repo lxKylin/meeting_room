@@ -95,19 +95,15 @@ export class CaptchaController {
   @ApiOperation({
     summary: '登录验证码' // 接口描述信息
   })
-  async getSvgCaptcha(@Res() response: Response, @Session() session) {
+  getSvgCaptcha(@Res() response: Response, @Session() session) {
     try {
-      const { data, text } = await this.captchaService.createSvgCaptcha();
-      console.log(data, text);
+      const { data, text } = this.captchaService.createSvgCaptcha();
       session.code = text;
-      // await this.redisService.set('svg-captcha', text, 60);
       response.set('Content-Type', 'image/svg+xml');
-      // response.send(Buffer.from(data, 'base64'));
-      // response.set('image/svg+xml');
       response.send(data);
-      return {
-        data
-      };
+      // return {
+      //   data
+      // };
     } catch (error) {
       console.error(error);
     }
