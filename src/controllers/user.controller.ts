@@ -200,21 +200,17 @@ export class UserController {
     summary: '查询用户列表&筛选' // 接口描述信息
   })
   async list(
-    @Query('pageNo', new DefaultValuePipe(1), generateParseIntPipe('pageNo'))
-    pageNo: number,
-    @Query(
-      'pageSize',
-      new DefaultValuePipe(2),
-      generateParseIntPipe('pageSize')
-    )
-    pageSize: number,
+    @Query('page', new DefaultValuePipe(1), generateParseIntPipe('page'))
+    page: number,
+    @Query('pageSize', new DefaultValuePipe(2), generateParseIntPipe('limit'))
+    limit: number,
     @Query('username') username: string,
     @Query('nickName') nickName: string,
     @Query('email') email: string
   ) {
     return await this.userService.findUsers(
-      pageNo,
-      pageSize,
+      page,
+      limit,
       username,
       nickName,
       email

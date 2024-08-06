@@ -13,6 +13,7 @@ import { ApiTags, ApiOperation, ApiConsumes } from '@nestjs/swagger';
 import { BusinessException } from '@/common/exceptions/business.exception';
 import { fileStorage } from '@/utils/file-storage';
 
+@ApiTags('文件上传模块')
 @Controller('upload')
 export class UploadController {
   /**
@@ -48,15 +49,6 @@ export class UploadController {
   // 获取header的file文件、键名
   @ApiConsumes('multipart/form-data')
   uploadPicture(@UploadedFile() file: Express.Multer.File) {
-    // try {
-    //   const { filename, mimetype, path, size } = file;
-    //   return this.uploadService.createPicture(filename, mimetype, path, size);
-    // } catch (error) {
-    //   throw new BusinessException({
-    //     code: BUSINESS_ERROR_CODE.COMMON,
-    //     message: '图片上传失败'
-    //   });
-    // }
     console.log('file', file);
     return file;
   }

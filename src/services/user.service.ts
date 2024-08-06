@@ -274,8 +274,8 @@ export class UserService {
   }
 
   async findUsers(
-    pageNum: number,
-    pageSize: number,
+    page: number,
+    limit: number,
     username: string,
     nickname: string,
     email: string
@@ -307,8 +307,8 @@ export class UserService {
         'headPic',
         'createTime'
       ],
-      skip: (pageNum - 1) * pageSize, // 页码减一乘以 pageSize，就是要跳过的记录数
-      take: pageSize,
+      skip: (page - 1) * limit, // 页码减一乘以 limit，就是要跳过的记录数
+      take: limit,
       where: condition
     });
 
