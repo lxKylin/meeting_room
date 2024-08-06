@@ -11,13 +11,18 @@ import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user.module';
 import { RedisModule } from './redis.module';
 import { AuthModule } from './auth.module';
+import { EntitiesModule } from './entities.module';
 
 import { AppController } from '@/controllers/app.controller';
+import { UserController } from '@/controllers/user.controller';
 import { CaptchaController } from '@/controllers/captcha.controller';
 import { UploadController } from '@/controllers/upload.controller';
+import { MeetingRoomController } from '@/controllers/meeting-room.controller';
 
+import { UserService } from '@/services/user.service';
 import { CaptchaService } from '@/services/captcha.service';
 import { UploadService } from '@/services/upload.service';
+import { MeetingRoomService } from '@/services/meeting-room.service';
 
 @Module({
   imports: [
@@ -34,15 +39,22 @@ import { UploadService } from '@/services/upload.service';
         database: process.env.DATABASE_NAME,
         autoLoadEntities: true, // 自动加载模块 推荐
         // entities: [path.join(__dirname, '/../**/*.entity{.ts,.js}')], // 不推荐
-        synchronize: true // 开启同步，生产中要禁止
-        // logging: true // 开启日志
+        synchronize: true, // 开启同步，生产中要禁止
+        logging: true // 开启日志
       })
     }),
-    UserModule,
+    // UserModule,
     RedisModule,
-    AuthModule
+    AuthModule,
+    EntitiesModule
   ],
-  controllers: [AppController, CaptchaController, UploadController],
-  providers: [CaptchaService, UploadService]
+  controllers: [
+    AppController,
+    UserController,
+    CaptchaController,
+    UploadController,
+    MeetingRoomController
+  ],
+  providers: [UserService, CaptchaService, UploadService, MeetingRoomService]
 })
 export class AppModule {}

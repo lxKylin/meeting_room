@@ -1,3 +1,6 @@
+/**
+ * 整体不使用，已单独在app.module.ts中单独引入
+ */
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
