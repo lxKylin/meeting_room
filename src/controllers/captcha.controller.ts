@@ -99,7 +99,8 @@ export class CaptchaController {
     try {
       const { data, text } = this.captchaService.createSvgCaptcha();
       session.code = text;
-      response.set('Content-Type', 'image/svg+xml');
+      response.type('image/svg+xml');
+      // response.set('Content-Type', 'image/svg+xml');
       response.send(data);
       // return {
       //   data
