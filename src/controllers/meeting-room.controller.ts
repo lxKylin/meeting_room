@@ -3,9 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
   Query,
   DefaultValuePipe
 } from '@nestjs/common';
@@ -22,7 +20,7 @@ import { CreateMeetingRoomDto } from '@/dtos/create-meeting-room.dto';
 import { UpdateMeetingRoomDto } from '@/dtos/update-meeting-room.dto';
 
 import { generateParseIntPipe } from '@/common/pipe/common.pipe';
-import { RequireLogin, UserInfo } from '@/common/decorator/custom.decorator';
+import { RequireLogin } from '@/common/decorator/custom.decorator';
 
 @ApiTags('会议室模块')
 @Controller('meeting-room')
@@ -103,7 +101,7 @@ export class MeetingRoomController {
     return this.meetingRoomService.findOneById(id);
   }
 
-  @Patch('update')
+  @Post('update')
   @RequireLogin()
   @ApiBearerAuth()
   @ApiOperation({
@@ -113,7 +111,7 @@ export class MeetingRoomController {
     return this.meetingRoomService.update(updateMeetingRoom);
   }
 
-  @Delete(':id')
+  @Get(':id')
   @RequireLogin()
   @ApiBearerAuth()
   @ApiOperation({
