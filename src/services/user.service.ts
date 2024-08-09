@@ -273,6 +273,16 @@ export class UserService {
     }
   }
 
+  async deleteUserById(id: string) {
+    try {
+      await this.userRepository.delete(id);
+      return '删除成功';
+    } catch (error) {
+      console.error(error);
+      return '删除失败';
+    }
+  }
+
   async findUsers(
     page: number,
     limit: number,

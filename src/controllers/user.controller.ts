@@ -162,6 +162,15 @@ export class UserController {
   async freeze(@Query('id') id: string, @Query('isFrozen') isFrozen: boolean) {
     return await this.userService.freezeUserById(id, isFrozen);
   }
+  @Get('delete')
+  @RequireLogin()
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: '删除用户' // 接口描述信息
+  })
+  async delete(@Query('id') id: string) {
+    return await this.userService.deleteUserById(id);
+  }
 
   @Get('list')
   @RequireLogin()
