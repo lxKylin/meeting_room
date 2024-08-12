@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like } from 'typeorm';
+import { InjectRepository, InjectEntityManager } from '@nestjs/typeorm';
+import { Repository, Like, EntityManager } from 'typeorm';
 
 import { BUSINESS_ERROR_CODE } from '@/common/exceptions/business.error.codes';
 import { BusinessException } from '@/common/exceptions/business.exception';
@@ -9,11 +9,17 @@ import { CreateMeetingRoomDto } from '@/dtos/create-meeting-room.dto';
 import { UpdateMeetingRoomDto } from '@/dtos/update-meeting-room.dto';
 
 import { MeetingRoom } from '@/entities/meeting-room.entity';
+import { Booking } from '@/entities/booking.entity';
 
 @Injectable()
 export class MeetingRoomService {
   @InjectRepository(MeetingRoom)
   private readonly meetingRoomRepository: Repository<MeetingRoom>;
+  @InjectRepository(Booking)
+  private readonly bookingRepository: Repository<Booking>;
+
+  @InjectEntityManager()
+  private entityManager: EntityManager;
   async create(meetingRoom: CreateMeetingRoomDto) {
     const foundMeetingRoom = await this.meetingRoomRepository.findOneBy({
       name: meetingRoom.name
@@ -90,7 +96,35 @@ export class MeetingRoomService {
     return '修改成功';
   }
 
+  /**
+   * 删除时需要注意：
+   * 因为 booking 表关联了 meeting-room 表，有外键约束，
+   * 所以要删除所有的预定之后再去删除会议室。
+   */
   async remove(id: string) {
+    // 方式一
+    // const bookings: Booking[] = await this.entityManager.findBy(Booking, {
+    //   room: {
+    //     id: id
+    //   }
+    // });
+    // for (let i: number = 0; i < bookings.length; i++) {
+    //   this.entityManager.delete(Booking, bookings[i].id);
+    // }
+
+    // 方式二
+    const bookings: Booking[] = await this.bookingRepository.find({
+      where: {
+        room: {
+          id
+        }
+      }
+    });
+
+    for (let i: number = 0; i < bookings.length; i++) {
+      this.bookingRepository.delete(bookings[i].id);
+    }
+
     await this.meetingRoomRepository.delete(id);
     return `删除成功`;
   }
