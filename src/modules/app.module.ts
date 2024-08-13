@@ -8,7 +8,7 @@ import * as path from 'path';
 // npm i --save @nestjs/config
 import { ConfigModule } from '@nestjs/config';
 
-import { UserModule } from './user.module';
+// import { UserModule } from './user.module';
 import { RedisModule } from './redis.module';
 import { AuthModule } from './auth.module';
 import { EntitiesModule } from './entities.module';
@@ -19,12 +19,14 @@ import { CaptchaController } from '@/controllers/captcha.controller';
 import { UploadController } from '@/controllers/upload.controller';
 import { MeetingRoomController } from '@/controllers/meeting-room.controller';
 import { BookingController } from '@/controllers/booking.controller';
+import { StatisticsController } from '@/controllers/statistics.controller';
 
 import { UserService } from '@/services/user.service';
 import { CaptchaService } from '@/services/captcha.service';
 import { UploadService } from '@/services/upload.service';
 import { MeetingRoomService } from '@/services/meeting-room.service';
 import { BookingService } from '@/services/booking.service';
+import { StatisticsService } from '@/services/statistics.service';
 
 @Module({
   imports: [
@@ -57,14 +59,16 @@ import { BookingService } from '@/services/booking.service';
     CaptchaController,
     UploadController,
     MeetingRoomController,
-    BookingController
+    BookingController,
+    StatisticsController
   ],
   providers: [
     UserService,
     CaptchaService,
     UploadService,
     MeetingRoomService,
-    BookingService
+    BookingService,
+    StatisticsService
   ]
 })
 export class AppModule {}
