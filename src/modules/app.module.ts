@@ -18,11 +18,13 @@ import { UserController } from '@/controllers/user.controller';
 import { CaptchaController } from '@/controllers/captcha.controller';
 import { UploadController } from '@/controllers/upload.controller';
 import { MeetingRoomController } from '@/controllers/meeting-room.controller';
+import { BookingController } from '@/controllers/booking.controller';
 
 import { UserService } from '@/services/user.service';
 import { CaptchaService } from '@/services/captcha.service';
 import { UploadService } from '@/services/upload.service';
 import { MeetingRoomService } from '@/services/meeting-room.service';
+import { BookingService } from '@/services/booking.service';
 
 @Module({
   imports: [
@@ -54,8 +56,15 @@ import { MeetingRoomService } from '@/services/meeting-room.service';
     UserController,
     CaptchaController,
     UploadController,
-    MeetingRoomController
+    MeetingRoomController,
+    BookingController
   ],
-  providers: [UserService, CaptchaService, UploadService, MeetingRoomService]
+  providers: [
+    UserService,
+    CaptchaService,
+    UploadService,
+    MeetingRoomService,
+    BookingService
+  ]
 })
 export class AppModule {}
