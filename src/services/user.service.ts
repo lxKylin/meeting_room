@@ -6,6 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import { md5 } from '@/utils/password-handle';
 
 import { RedisService } from '@/services/redis.service';
+import { EncryptService } from '@/services/encrypt.service';
 
 import { User } from '@/entities/user.entity';
 import { Role } from '@/entities/role.entity';
@@ -48,6 +49,9 @@ export class UserService {
 
   @Inject(JwtService)
   private readonly jwtService: JwtService;
+
+  @Inject(EncryptService)
+  private readonly encryptService: EncryptService;
 
   /**
    * 注册
@@ -111,6 +115,7 @@ export class UserService {
    * @returns
    */
   async login(loginUser: LoginUserDto) {
+    const decryptUserDetail = JSON.parse(this.encryptService.decrypt(loginUser.password))
     const user = await this.userRepository.findOne({
       where: {
         username: loginUser.username
@@ -118,7 +123,7 @@ export class UserService {
       relations: ['roles', 'roles.permissions'] // 设置级联查询 roles 和 roles.permissions。
     });
 
-    if (!user || user.password !== md5(loginUser.password)) {
+    if (!user || user.password !== decryptUserDetail.password) {
       throw new BusinessException({
         code: BUSINESS_ERROR_CODE.COMMON,
         message: '账号或密码错误'
