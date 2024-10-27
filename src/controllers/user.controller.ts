@@ -226,6 +226,21 @@ export class UserController {
     );
   }
 
+  @Get('isLogin')
+  @ApiOperation({
+    summary: '检查用户是否登录' // 接口描述信息
+  })
+  async isLogin(@Query('token') token: string) {
+    try {
+      await this.jwtService.verify(token);
+      return { isLogin: true };
+    } catch (error) {
+      return {
+        isLogin: false
+      };
+    }
+  }
+
   @Get('init-data')
   @ApiOperation({
     summary: '初始化数据' // 接口描述信息
